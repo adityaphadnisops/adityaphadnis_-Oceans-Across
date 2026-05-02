@@ -1,0 +1,11 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Terraform lock file (OPTIONAL keep it)
+# .terraform.lock.hcl
+
+# macOS
+.DS_Store
