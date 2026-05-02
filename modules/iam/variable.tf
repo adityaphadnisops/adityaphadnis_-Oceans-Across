@@ -1,0 +1,9 @@
+variable "tenant_names" {
+  description = "List of tenant environments to isolate at the IAM level"
+  type        = list(string)
+}
+
+variable "bucket_name" {
+  description = "Base bucket name for tenant-scoped S3 access"
+  type        = string
+}

@@ -13,17 +13,27 @@ output "private_subnet_ids" {
   value       = module.vpc.private_subnet_ids
 }
 
-output "eks_cluster_name" {
-  description = "EKS cluster name"
-  value       = module.eks.cluster_name
+output "tenant_instance_ids" {
+  description = "EC2 instance IDs for tenant backend services"
+  value       = module.tenants.instance_ids
 }
 
-output "eks_cluster_endpoint" {
-  description = "EKS API server endpoint"
-  value       = module.eks.cluster_endpoint
+output "tenant_security_group_ids" {
+  description = "Security group IDs for tenant isolation"
+  value       = module.tenants.tenant_security_group_ids
 }
 
-output "eks_cluster_ca_certificate" {
-  description = "EKS cluster CA certificate"
-  value       = module.eks.cluster_certificate_authority
+output "s3_bucket_name" {
+  description = "Payroll documents bucket name"
+  value       = module.storage.bucket_name
+}
+
+output "db_endpoint" {
+  description = "Primary RDS PostgreSQL endpoint"
+  value       = module.database.db_endpoint
+}
+
+output "db_name" {
+  description = "RDS PostgreSQL database name"
+  value       = module.database.db_name
 }

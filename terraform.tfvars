@@ -1,5 +1,6 @@
-cluster_name    = "demo-eks"
-cluster_version = "1.29"
+project_name = "payroll-platform"
+
+aws_region = "ap-south-1"
 
 vpc_cidr = "10.0.0.0/16"
 
@@ -15,24 +16,15 @@ private_subnet_cidrs = [
   "10.0.102.0/24"
 ]
 
-node_groups = {
-  on_demand = {
-    instance_types = ["t3.medium"]
-    capacity_type  = "ON_DEMAND"
-    scaling_config = {
-      desired_size = 2
-      min_size     = 1
-      max_size     = 3
-    }
-  }
+tenant_names = [
+  "companies",
+  "bureaus",
+  "employees"
+]
 
-  spot = {
-    instance_types = ["t3.medium", "t3.large"]
-    capacity_type  = "SPOT"
-    scaling_config = {
-      desired_size = 1
-      min_size     = 0
-      max_size     = 5
-    }
-  }
-}
+instance_type = "t3.micro"
+
+bucket_name = "payroll-documents"
+
+db_username = "payroll_admin"
+db_name     = "payrolldb"

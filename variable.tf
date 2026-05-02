@@ -4,13 +4,8 @@ variable "aws_region" {
   default     = "ap-south-1"
 }
 
-variable "cluster_name" {
-  description = "Name of the EKS cluster"
-  type        = string
-}
-
-variable "cluster_version" {
-  description = "Kubernetes version for the EKS cluster (e.g. 1.29)"
+variable "project_name" {
+  description = "Name of the payroll project used for tagging and resource naming"
   type        = string
 }
 
@@ -34,15 +29,31 @@ variable "availability_zones" {
   type        = list(string)
 }
 
-variable "node_groups" {
-  description = "EKS managed node group definitions"
-  type = map(object({
-    instance_types = list(string)
-    capacity_type  = string
-    scaling_config = object({
-      desired_size = number
-      min_size     = number
-      max_size     = number
-    })
-  }))
+variable "tenant_names" {
+  description = "Tenant environments to create isolated backend compute resources for"
+  type        = list(string)
+}
+
+variable "instance_type" {
+  description = "EC2 instance type for tenant backend services"
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "bucket_name" {
+  description = "Base name for the payroll documents S3 bucket"
+  type        = string
+  default     = "payroll-documents"
+}
+
+variable "db_username" {
+  description = "Master username for the PostgreSQL database"
+  type        = string
+  default     = "payroll_admin"
+}
+
+variable "db_name" {
+  description = "Primary database name for the payroll platform"
+  type        = string
+  default     = "payrolldb"
 }

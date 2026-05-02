@@ -1,18 +1,44 @@
 module "vpc" {
   source = "./modules/vpc"
 
-  cluster_name          = var.cluster_name
-  vpc_cidr              = var.vpc_cidr
-  public_subnet_cidrs   = var.public_subnet_cidrs
-  private_subnet_cidrs  = var.private_subnet_cidrs
-  availability_zones    = var.availability_zones
+  project_name         = var.project_name
+  vpc_cidr             = var.vpc_cidr
+  public_subnet_cidrs  = var.public_subnet_cidrs
+  private_subnet_cidrs = var.private_subnet_cidrs
+  availability_zones   = var.availability_zones
 }
 
-module "eks" {
-  source = "./modules/eks"
+module "iam" {
+  source = "./modules/iam"
 
-  cluster_name    = var.cluster_name
-  cluster_version = var.cluster_version
-  subnet_ids      = module.vpc.private_subnet_ids
-  node_groups     = var.node_groups
+  tenant_names = var.tenant_names
+  bucket_name  = var.bucket_name
+}
+
+module "tenants" {
+  source = "./modules/tenants"
+
+  project_name           = var.project_name
+  vpc_id                 = module.vpc.vpc_id
+  private_subnet_ids     = module.vpc.private_subnet_ids
+  tenant_names           = var.tenant_names
+  instance_type          = var.instance_type
+  instance_profile_names = module.iam.instance_profile_names
+}
+
+module "storage" {
+  source = "./modules/storage"
+
+  bucket_name = var.bucket_name
+}
+
+module "database" {
+  source = "./modules/database"
+
+  project_name               = var.project_name
+  vpc_id                     = module.vpc.vpc_id
+  private_subnet_ids         = module.vpc.private_subnet_ids
+  allowed_security_group_ids = module.tenants.tenant_security_group_ids
+  db_username                = var.db_username
+  db_name                    = var.db_name
 }

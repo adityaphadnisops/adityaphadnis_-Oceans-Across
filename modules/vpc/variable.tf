@@ -1,5 +1,5 @@
-variable "cluster_name" {
-  description = "EKS cluster name used in resource tags"
+variable "project_name" {
+  description = "Project name used for resource naming and tagging"
   type        = string
 }
 
