@@ -43,24 +43,34 @@ resource "random_password" "db_password" {
   override_special = "!@#$%&*()-_=+"
 }
 
+resource "aws_secretsmanager_secret" "db" {
+  name        = "${var.project_name}-db-credentials"
+  description = "RDS credentials for ${var.project_name} (managed by Terraform)"
+  tags        = merge({ Name = "${var.project_name}-db-secret" }, var.tags)
+}
+
+resource "aws_secretsmanager_secret_version" "db" {
+  secret_id     = aws_secretsmanager_secret.db.id
+  secret_string = jsonencode({ username = var.db_username, password = random_password.db_password.result })
+}
+
 resource "aws_db_instance" "postgres" {
   identifier              = "${var.project_name}-payroll-db"
   engine                  = "postgres"
-  engine_version          = "15.4"
-  instance_class          = "db.t3.micro"
-  allocated_storage       = 20
+  engine_version          = "14"
+  instance_class          = var.instance_class
+  allocated_storage       = var.allocated_storage
   storage_type            = "gp3"
   username                = var.db_username
-  password                = random_password.db_password.result
+  password                = jsondecode(aws_secretsmanager_secret_version.db.secret_string)["password"]
   db_name                 = var.db_name
   db_subnet_group_name    = aws_db_subnet_group.default.name
   vpc_security_group_ids  = [aws_security_group.db.id]
   publicly_accessible     = false
-  skip_final_snapshot     = true
-  deletion_protection     = false
+  skip_final_snapshot     = var.skip_final_snapshot
+  deletion_protection     = var.deletion_protection
   backup_retention_period = 7
+  kms_key_id              = var.kms_key_id
 
-  tags = {
-    Name = "${var.project_name}-payroll-db"
-  }
+  tags = merge({ Name = "${var.project_name}-payroll-db" }, var.tags)
 }

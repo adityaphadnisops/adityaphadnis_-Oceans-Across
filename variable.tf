@@ -57,3 +57,12 @@ variable "db_name" {
   type        = string
   default     = "payrolldb"
 }
+
+variable "tags" {
+  description = "Common tags"
+  type        = map(string)
+  default = {
+    Project     = "payroll-platform"
+    Environment = "dev"
+  }
+}

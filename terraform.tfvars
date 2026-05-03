@@ -17,9 +17,9 @@ private_subnet_cidrs = [
 ]
 
 tenant_names = [
-  "companies",
-  "bureaus",
-  "employees"
+  "company",
+  "bureau",
+  "employee"
 ]
 
 instance_type = "t3.micro"

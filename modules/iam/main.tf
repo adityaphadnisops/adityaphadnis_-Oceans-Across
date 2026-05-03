@@ -23,39 +23,57 @@ resource "aws_iam_role_policy" "tenant_policy" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "S3TenantAccess"
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket"
-        ]
-        Resource = "arn:aws:s3:::${var.bucket_name}"
-        Condition = {
-          StringLike = {
-            "s3:prefix" = ["${each.key}/*"]
+    Statement = concat(
+
+      # 🔐 S3 List
+      [
+        {
+          Sid    = "S3TenantList"
+          Effect = "Allow"
+          Action = ["s3:ListBucket"]
+          Resource = "arn:aws:s3:::${var.bucket_name}"
+          Condition = {
+            StringLike = {
+              "s3:prefix" = ["${each.key}/*"]
+            }
           }
         }
-      },
-      {
-        Sid    = "S3TenantObjects"
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject"
-        ]
-        Resource = "arn:aws:s3:::${var.bucket_name}/${each.key}/*"
-      },
-      {
-        Sid    = "DescribeEC2"
-        Effect = "Allow"
-        Action = [
-          "ec2:DescribeInstances"
-        ]
-        Resource = "*"
-      }
-    ]
+      ],
+
+      # 🔐 S3 Object access
+      [
+        {
+          Sid    = "S3TenantObjects"
+          Effect = "Allow"
+          Action = [
+            "s3:GetObject",
+            "s3:PutObject",
+            "s3:DeleteObject"
+          ]
+          Resource = "arn:aws:s3:::${var.bucket_name}/${each.key}/*"
+        }
+      ],
+
+      # 🔍 EC2 Describe
+      [
+        {
+          Sid    = "DescribeEC2"
+          Effect = "Allow"
+          Action = ["ec2:DescribeInstances"]
+          Resource = "*"
+        }
+      ],
+
+      # 🔥 Secrets Manager (ONLY if ARN provided)
+      var.db_secret_arn != "" ? [
+        {
+          Sid    = "SecretsManagerDBAccess"
+          Effect = "Allow"
+          Action = ["secretsmanager:GetSecretValue"]
+          Resource = var.db_secret_arn
+        }
+      ] : []
+    )
   })
 }
 

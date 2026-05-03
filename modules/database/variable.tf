@@ -27,3 +27,39 @@ variable "db_name" {
   description = "Primary database name"
   type        = string
 }
+
+variable "kms_key_id" {
+  description = "KMS key id for DB encryption"
+  type        = string
+  default     = ""
+}
+
+variable "skip_final_snapshot" {
+  description = "Whether to skip final snapshot on destroy (false is safer)"
+  type        = bool
+  default     = false
+}
+
+variable "deletion_protection" {
+  description = "Enable deletion protection for DB instance"
+  type        = bool
+  default     = true
+}
+
+variable "instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "allocated_storage" {
+  description = "Allocated storage in GB"
+  type        = number
+  default     = 20
+}
+
+variable "tags" {
+  description = "Tags applied to DB resources"
+  type        = map(string)
+  default     = {}
+}

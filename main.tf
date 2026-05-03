@@ -1,3 +1,7 @@
+data "aws_kms_alias" "s3" {
+  name = "alias/aws/s3"
+}
+
 module "vpc" {
   source = "./modules/vpc"
 
@@ -8,13 +12,19 @@ module "vpc" {
   availability_zones   = var.availability_zones
 }
 
+
+
+# 🔐 IAM (must output role_arns)
 module "iam" {
   source = "./modules/iam"
 
   tenant_names = var.tenant_names
   bucket_name  = var.bucket_name
+
+  db_secret_arn = module.database.db_secret_arn
 }
 
+# 💻 EC2 (tenants)
 module "tenants" {
   source = "./modules/tenants"
 
@@ -26,12 +36,22 @@ module "tenants" {
   instance_profile_names = module.iam.instance_profile_names
 }
 
+# 🪣 STORAGE (FIXED - ALL REQUIRED ARGS PASSED)
 module "storage" {
   source = "./modules/storage"
 
-  bucket_name = var.bucket_name
+  bucket_name      = var.bucket_name
+  kms_key_id = data.aws_kms_alias.s3.target_key_id
+  tenants          = var.tenant_names
+  tenant_role_arns = module.iam.role_arns
+
+  tags = {
+    Project     = var.project_name
+    Environment = "dev"
+  }
 }
 
+# 🗄️ DATABASE
 module "database" {
   source = "./modules/database"
 

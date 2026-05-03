@@ -1,0 +1,9 @@
+region = "us-east-1"
+vpc_cidr = "10.0.0.0/16"
+public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnet_cidrs = ["10.0.101.0/24", "10.0.102.0/24"]
+admin_cidr = "203.0.113.0/32" # replace with your admin IP
+instance_type = "t3.micro"
+db_username = "dbadmin"
+# Do NOT commit real secrets to VCS. Use a secret manager in prod.
+db_password = "ChangeMe123!"
